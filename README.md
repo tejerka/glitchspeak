@@ -153,17 +153,27 @@ Two families that compose without stepping on each other:
 
 ### `TimingPreset`
 
-`instant` · `steady` · `human` (default) · `nervous` · `corrupted`
+From calm to frantic — `TimingPreset.levels` keeps them in order:
 
-| Option                    | Description                                                                |
-| ------------------------- | -------------------------------------------------------------------------- |
-| `cps`                     | Characters per second. `Infinity` types everything at once. Default `28`.  |
-| `jitter`                  | Random variation of each keystroke, in [0, 1].                             |
-| `wordPause` / `linePause` | Extra milliseconds after a space / a line break.                           |
-| `flicker`                 | Probability that a character is mistyped, erased, then corrected.          |
-| `flickerGlyphs`           | Characters drawn for mistypes and for the scramble of resolving words.     |
-| `resolveDelay`            | Milliseconds between the last keystroke and the resolution. Default `400`. |
-| `resolveDuration`         | How long resolving words take to decode back. Default `300`.               |
+| Preset      | `cps` | `jitter` | `wordPause` / `linePause` | `flicker` | `resolveDuration` |
+| ----------- | ----- | -------- | ------------------------- | --------- | ----------------- |
+| `instant`   | ∞     | 0        | 0 / 0                     | 0         | 0                 |
+| `steady`    | 30    | 0        | 0 / 250                   | 0         | 300               |
+| `human`     | 28    | 0.35     | 40 / 300                  | 0         | 300               |
+| `nervous`   | 40    | 0.6      | 20 / 150                  | 0.03      | 450               |
+| `corrupted` | 45    | 0.8      | 0 / 120                   | 0.08      | 700               |
+
+`default` is `human`. `instant` has no animation at all: the final frame right away.
+
+| Option                    | Description                                                                 |
+| ------------------------- | --------------------------------------------------------------------------- |
+| `cps`                     | Characters per second. `Infinity` types everything at once. Default `28`.   |
+| `jitter`                  | Random variation of each keystroke, in [0, 1].                              |
+| `wordPause` / `linePause` | Extra milliseconds after a space / a line break.                            |
+| `flicker`                 | Probability that a character is mistyped, erased, then corrected.           |
+| `flickerGlyphs`           | Characters drawn for mistypes and for the scramble of resolving words.      |
+| `resolveDelay`            | Milliseconds between the last keystroke and the resolution. Default `400`.  |
+| `resolveDuration`         | How long resolving words take to decode back. Default `300`.                |
 
 ---
 
@@ -175,11 +185,11 @@ Pure. Returns `Token[]`.
 encode("nobody on earth knows", "sql", { seed: 42, lines: 2, resolve: "last-word" });
 ```
 
-| Option    | Description                                                                                                      |
-| --------- | ---------------------------------------------------------------------------------------------------------------- |
-| `seed`    | Defaults to a hash of the text: stable between server and client.                                                |
-| `lines`   | Rebalances the words into N lines. Line breaks already in the text always win.                                   |
-| `resolve` | `'last-word'` (default), `'all'`, `'none'`, word indices (negative from the end), or `(word, index) => boolean`. |
+| Option    | Description                                                                                                       |
+| --------- | ----------------------------------------------------------------------------------------------------------------- |
+| `seed`    | Defaults to a hash of the text: stable between server and client.                                                 |
+| `lines`   | Rebalances the words into N lines. Line breaks already in the text always win.                                    |
+| `resolve` | `'last-word'` (default), `'all'`, `'none'`, word indices (negative from the end), or `(word, index) => boolean`.  |
 
 ```typescript
 type Token =
@@ -210,25 +220,37 @@ The encode and timing draws come from two independent streams of the same seed: 
 
 A clock over a timeline. Knows nothing about the DOM.
 
-| Member                                                     | Description                                                                                              |
-| ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `subscribe(fn)`                                            | Calls `fn` with the current frame right away, then on every visible change. Returns `{ unsubscribe() }`. |
-| `play()` · `pause()` · `seek(ms)` · `skip()` · `restart()` | Transport.                                                                                               |
-| `frame` · `time` · `playing`                               | Current state.                                                                                           |
-| `finished`                                                 | Resolves the first time the end is reached.                                                              |
-| `destroy()`                                                | Stops the clock and drops every subscriber.                                                              |
+| Member                                                     | Description                                                                                               |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `subscribe(fn)`                                            | Calls `fn` with the current frame right away, then on every visible change. Returns `{ unsubscribe() }`.  |
+| `play()` · `pause()` · `seek(ms)` · `skip()` · `restart()` | Transport.                                                                                                |
+| `frame` · `time` · `playing`                               | Current state.                                                                                            |
+| `finished`                                                 | Resolves the first time the end is reached.                                                               |
+| `destroy()`                                                | Stops the clock and drops every subscriber.                                                               |
 
 Options: `autoplay` (default `true`) and `scheduler` — `requestAnimationFrame` by default, `setTimeout` where there is none, or your own for tests.
 
-`glitchspeak(text, options)` runs the whole pipeline in one call: `encode`, `timeline`, `play`.
+### `glitchspeak(input, options?)` and `compile(input, options?)`
 
-### `mount(element, text, options?)`
+The whole pipeline in one call. `input` is a sentence or ready-made tokens; `options` takes `encode`, `timing`, `seed`, `lines` and `resolve` — one seed feeds both stages.
+
+```typescript
+import { compile, glitchspeak } from "@efficimo/glitchspeak";
+
+const run = compile("nobody on earth knows", { encode: "sql", timing: "nervous", seed: 42 }); // encode + timeline
+const player = glitchspeak("nobody on earth knows", { encode: "sql", autoplay: false }); // + play
+
+player.subscribe((frame) => console.log(frame.phase));
+```
+
+### `mount(element, input, options?)`
 
 Renders into `element`, replacing its content. Returns `{ player, unmount() }`.
 
 | Option                                             | Description                                                                                           |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `encode` · `timing` · `seed` · `lines` · `resolve` | As above.                                                                                             |
+| `autoplay` · `scheduler`                           | As in `play`.                                                                                         |
 | `lineNumbers`                                      | A gutter with line numbers.                                                                           |
 | `cursor`                                           | The cursor character, or `false`. Default `'▌'`.                                                      |
 | `label`                                            | Replaces the text read by screen readers.                                                             |
@@ -248,7 +270,19 @@ Renders into `element`, replacing its content. Returns `{ player, unmount() }`.
 </glitch-speak>
 ```
 
-Registration is explicit: importing the library never touches the global registry. Attributes: `text` (else the content), `encode` and `timing` (one name, or several composed from left to right), `seed`, `lines`, `resolve` (`last-word`, `all`, `none` or `0,-1`), `line-numbers`, `cursor`, `label`, `reduced-motion`. The element exposes its `player`.
+Registration is explicit: importing the library never touches the global registry. `defineGlitchSpeakElement(tagName?, registry?)` defaults to `glitch-speak` on `customElements`, and does nothing when the tag is already defined.
+
+| Attribute                  | Value                                                                    |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `text`                     | The sentence. Defaults to the element content.                           |
+| `encode` · `timing`        | One preset name, or several composed from left to right: `corrupted sql` |
+| `seed` · `lines`           | Numbers.                                                                 |
+| `resolve`                  | `last-word`, `all`, `none`, or word indices: `0,-1`                      |
+| `line-numbers`             | Boolean attribute.                                                       |
+| `cursor`                   | The cursor character, or `false`.                                        |
+| `label` · `reduced-motion` | As in `mount`.                                                           |
+
+Every attribute change replays the animation. The element exposes its `player`. The same parsers are exported for your own integrations: `parseEncodePreset`, `parseTimingPreset`, `parseResolve`, `readAttributes(element)`.
 
 ### Embed
 
@@ -265,18 +299,31 @@ Plus `bg=transparent`, `size` (px) and `align=center`. A click replays it. The p
 
 ### Renderers
 
-| Function                                | Output                                                                                                                                |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `frameToHtml(frame, options?)`          | A self-contained block: SSR, e-mails, static pages.                                                                                   |
-| `frameToText(frame, options?)`          | Plain text: logs, snapshots.                                                                                                          |
-| `frameToAnsi(frame, options?)`          | Terminal colors — `colors: 'truecolor' \| '256' \| 'none'`, `theme`. Resolved words come out bold and bright: terminals have no glow. |
-| `mountTerminal(stream, text, options?)` | Plays in a terminal, rewriting its lines in place. Pipes get the final frame only; `NO_COLOR` is honored.                             |
+| Function                                 | Output                                                                                                                                |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `frameToHtml(frame, options?)`           | A self-contained block: SSR, e-mails, static pages.                                                                                   |
+| `frameLinesToHtml(frame, options?)`      | The lines only, without the root and the screen reader text.                                                                          |
+| `frameToText(frame, options?)`           | Plain text: logs, snapshots.                                                                                                          |
+| `frameToAnsi(frame, options?)`           | Terminal colors — `colors: 'truecolor' \| '256' \| 'none'`, `theme`. Resolved words come out bold and bright: terminals have no glow. |
+| `mountTerminal(stream, input, options?)` | Plays in a terminal, rewriting its lines in place. Returns `{ player, unmount() }`.                                                   |
+
+Every renderer takes `lineNumbers` and `cursor`; HTML ones also take `label` and `classNames`.
 
 ```typescript
 import { mountTerminal } from "@efficimo/glitchspeak";
 
 await mountTerminal(process.stdout, "the core is awake", { encode: "scrambled" }).player.finished;
 ```
+
+`mountTerminal` accepts every `glitchspeak` option, plus:
+
+| Option    | Description                                                                                                    |
+| --------- | -------------------------------------------------------------------------------------------------------------- |
+| `animate` | `'auto'` (default) animates on a TTY only: pipes and log files get the final frame. `true` / `false` force it. |
+| `colors`  | Defaults to `'none'` with `NO_COLOR`, `'truecolor'` with `COLORTERM=truecolor`, else `'256'`.                  |
+| `theme`   | Hex colors of `plain`, `glyph`, `noise`, `resolved`, `cursor`, `gutter`. Defaults in `defaultAnsiTheme`.       |
+
+Try it from a clone: `npm run demo:terminal -- "the core is awake" "corrupted sql"`.
 
 ### Styling
 
@@ -299,7 +346,18 @@ await mountTerminal(process.stdout, "the core is awake", { encode: "scrambled" }
 }
 ```
 
-Or skip the stylesheet and pass `classNames`.
+Or skip the stylesheet and pass `classNames`: `defaultClassNames` lists the defaults, `resolveClassNames(partial)` merges yours over them.
+
+### Utilities
+
+| Export                                    | Description                                                                                                 |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `sourceText(tokens)`                      | The human text behind tokens.                                                                               |
+| `Preset` · `mergeOptions(base, layer)`    | The base class of `EncodePreset` and `TimingPreset`, and its merge — to build presets for your own modules. |
+| `createRandom(seed)` · `hashString(text)` | The seeded generator (Mulberry32) and string hash (FNV-1a) behind every draw.                               |
+| `defaultScheduler()`                      | The clock `play` uses by default.                                                                           |
+| `prefersReducedMotion(window)`            | The `prefers-reduced-motion` check `mount` and the React bindings use.                                      |
+| `escapeHtml(text)` · `srOnlyStyle`        | What the HTML renderers use to escape text and hide the screen reader label.                                |
 
 ---
 
@@ -333,13 +391,16 @@ function Boot() {
 }
 ```
 
-Every `mount` option is a prop, plus `as`, `className`, `autoplay` and `onDone`. The animation restarts when the text or an option changes — pass presets by name, or keep their reference stable. On the server, the first frame renders; with `reducedMotion="always"`, the final one.
+Every `mount` option is a prop — `text` takes a sentence or ready-made tokens — plus `as`, `className` and `onDone`, called each time the animation reaches its end. The animation restarts when the text or an option changes — pass presets by name, or keep their reference stable. On the server, the first frame renders; with `reducedMotion="always"`, the final one.
 
-### `useGlitchSpeak(text, options?)`
+### `useGlitchSpeak(input, options?)`
 
-Returns `{ frame, player }` for a renderer of your own. Built on `useSyncExternalStore`.
+Returns `{ frame, player }` for a renderer of your own. Built on `useSyncExternalStore`. Takes the same options as the component, rendering ones aside.
 
 ```tsx
+import { frameToText } from "@efficimo/glitchspeak";
+import { useGlitchSpeak } from "@efficimo/glitchspeak-react";
+
 function Status() {
   const { frame, player } = useGlitchSpeak("loading the lore");
 
