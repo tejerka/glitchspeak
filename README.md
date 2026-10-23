@@ -203,7 +203,7 @@ Tokens are plain data: write them by hand to get an exact look — the demo repr
 
 ### `timeline(tokens, preset?, options?)`
 
-Pure. Schedules every keystroke and returns `{ tokens, duration, typingEnd, frameAt(ms) }`.
+Pure. Schedules every keystroke and returns `{ tokens, duration, typingEnd, changes, frameAt(ms) }` — `changes` lists every time the frame changes, from 0 to `duration`.
 
 ```typescript
 const run = timeline(encode("nobody on earth knows"), "nervous", { seed: 42 });
@@ -212,7 +212,7 @@ run.frameAt(0); // empty
 run.frameAt(run.duration); // the final frame
 ```
 
-A `Frame` holds `phase` (`'typing'`, `'resolving'`, `'done'`), `lines` of `{ kind, text }`, `progress`, the human `text`, and a `step` that changes exactly when the content does. When words resolve, they decode back to their source and the noise hanging on them goes away.
+A `Frame` holds `phase` (`'typing'`, `'resolving'`, `'done'`), `lines` of `{ kind, text, mistyped? }`, `progress`, the human `text`, and a `step` that changes exactly when the content does. When words resolve, they decode back to their source and the noise hanging on them goes away.
 
 The encode and timing draws come from two independent streams of the same seed: changing the rhythm never changes the code.
 
@@ -306,6 +306,7 @@ Plus `bg=transparent`, `size` (px) and `align=center`. A click replays it. The p
 | `frameToText(frame, options?)`           | Plain text: logs, snapshots.                                                                                                          |
 | `frameToAnsi(frame, options?)`           | Terminal colors — `colors: 'truecolor' \| '256' \| 'none'`, `theme`. Resolved words come out bold and bright: terminals have no glow. |
 | `mountTerminal(stream, input, options?)` | Plays in a terminal, rewriting its lines in place. Returns `{ player, unmount() }`.                                                   |
+| `timelineToSvg(timeline, options?)`     | A self-contained animated SVG — see below.                                                                                            |
 
 Every renderer takes `lineNumbers` and `cursor`; HTML ones also take `label` and `classNames`.
 
@@ -324,6 +325,46 @@ await mountTerminal(process.stdout, "the core is awake", { encode: "scrambled" }
 | `theme`   | Hex colors of `plain`, `glyph`, `noise`, `resolved`, `cursor`, `gutter`. Defaults in `defaultAnsiTheme`.       |
 
 Try it from a clone: `npm run demo:terminal -- "the core is awake" "corrupted sql"`.
+
+### Animated SVG
+
+`timelineToSvg(timeline, options?)` — or `renderSvg(input, options?)` for the whole pipeline — writes a self-contained animated SVG: no script, no external resource. It plays wherever an SVG shows as an image: GitHub and npm READMEs, Markdown previews in editors, `<img>`. Chat apps and most e-mail clients do not render SVG at all.
+
+```typescript
+import { writeFileSync } from "node:fs";
+import { renderSvg } from "@tejerka/glitchspeak";
+
+writeFileSync("hero.svg", renderSvg("the core is awake", { encode: "scrambled", lineNumbers: true }));
+```
+
+| Option                              | Description                                                                                         |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `lineNumbers` · `cursor` · `label`  | As for the other renderers. `label` goes to the SVG `<title>`.                                      |
+| `fontSize`                          | In pixels. Default `20`.                                                                            |
+| `loop` · `hold`                     | Plays forever (default), holding the final frame `hold` ms (default `3000`). `loop: false` plays once. |
+| `theme`                             | `defaultSvgTheme`: the ANSI colors plus `background` (or `"none"`) and `glow`.                      |
+| `fontFamily` · `resolvedFontFamily` | Font stacks. Monospace text is pinned to its grid with `textLength`, whatever font is picked.        |
+
+The animation is discrete SMIL, which image viewers run. Where animations do not run, or when the viewer prefers reduced motion, the picture shows the final frame.
+
+### SVG worker
+
+[`worker/`](./worker) is a Cloudflare Worker that renders the SVG from its URL, so a README can embed a sentence without committing a file:
+
+```
+https://glitchspeak.<subdomain>.workers.dev/[encode]/[timing]/<text>.svg?seed=42&lines=3&lineNumbers
+```
+
+```markdown
+![the core is awake](https://glitchspeak.<subdomain>.workers.dev/corrupted+shell/nervous/the_core_is_awake.svg)
+```
+
+- `encode` and `timing` are preset names, composed with `+`; `_` keeps the default. Both are optional, from the right.
+- In the text, `_` is a space; a real underscore is `%5F`. At most 200 characters.
+- Query: `seed`, `lines`, `resolve`, `lineNumbers`, `cursor`, `label`, `size` (8–96), `loop` (`0` to play once), `hold`, `bg` (hex without `#`, or `none`), `accent` (hex).
+- The rendering is deterministic, so every response is cached for a year. Unknown presets and invalid options answer `400` with the reason.
+
+The playground builds these links, and downloads the same SVG to commit instead.
 
 ### Styling
 
@@ -438,6 +479,11 @@ npm run dev
 
 # terminal demo
 npm run demo:terminal -- "the core is awake" "corrupted sql"
+
+# SVG worker (reads the built core)
+npm run install:worker
+npm run dev:worker          # http://localhost:8787
+npm --prefix worker test
 ```
 
 ## Publishing
@@ -448,7 +494,7 @@ Pushing a `v*` tag triggers both publish workflows; each syncs its version from 
 | -------- | ------------------------------------------------------------------- |
 | `v1.2.3` | `@tejerka/glitchspeak@1.2.3` and `@tejerka/glitchspeak-react@1.2.3` |
 
-Every successful CI run on `main` deploys the demo to GitHub Pages.
+Every successful CI run on `main` deploys the demo to GitHub Pages, and the SVG worker to Cloudflare once the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets are set — without them, the worker deploy is skipped. Set the `SVG_HOST` repository variable to the worker URL so the playground links to it.
 
 ## License
 

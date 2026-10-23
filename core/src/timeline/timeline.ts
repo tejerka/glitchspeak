@@ -8,6 +8,8 @@ export type FrameTokenKind = "plain" | "glyph" | "noise" | "space" | "resolved";
 export interface FrameToken {
   readonly kind: FrameTokenKind;
   readonly text: string;
+  /** A wrong character, about to be erased. */
+  readonly mistyped?: boolean;
 }
 
 export type FramePhase = "typing" | "resolving" | "done";
@@ -34,6 +36,8 @@ export interface Timeline {
   readonly duration: number;
   /** When the last keystroke lands. */
   readonly typingEnd: number;
+  /** Every time the frame changes, in order, from 0 to `duration`. */
+  readonly changes: readonly number[];
   frameAt(time: number): Frame;
 }
 
@@ -148,7 +152,7 @@ export const timeline = (
     if (keystroke.wrong !== null) {
       const token = tokens[unitToken[keystroke.typed] as number] as Token;
       const kind = token.kind === "break" ? "plain" : token.kind;
-      lines[lines.length - 1]?.push({ kind, text: keystroke.wrong });
+      lines[lines.length - 1]?.push({ kind, text: keystroke.wrong, mistyped: true });
     }
 
     return {
@@ -228,10 +232,22 @@ export const timeline = (
     return low;
   };
 
+  const changes = [
+    ...new Set([
+      ...keystrokes.map((keystroke) => keystroke.time),
+      ...(words.size > 0
+        ? Array.from({ length: buckets }, (_, bucket) => resolveStart + bucket * SCRAMBLE_INTERVAL)
+        : []),
+    ]),
+  ]
+    .filter((time) => time < duration)
+    .concat(duration);
+
   return {
     tokens,
     duration,
     typingEnd,
+    changes,
     frameAt: (at) => {
       if (!(at < duration)) return finalFrame;
 

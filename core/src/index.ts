@@ -10,6 +10,7 @@ export { createRandom, hashString, type Random } from "./random.ts";
 export * from "./render/ansi.ts";
 export * from "./render/classNames.ts";
 export * from "./render/html.ts";
+export * from "./render/svg.ts";
 export * from "./render/terminal.ts";
 export * from "./render/text.ts";
 export * from "./timeline/TimingPreset.ts";

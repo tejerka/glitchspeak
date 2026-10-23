@@ -1,0 +1,6 @@
+# Deployed by .github/workflows/deploy-worker.yml after every green CI on main,
+# or by hand: npm run deploy --prefix worker (build core first).
+name = "glitchspeak"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+workers_dev = true

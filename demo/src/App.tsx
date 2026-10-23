@@ -1,4 +1,9 @@
-import { EncodePreset, type EncodePresetName, type TimingPresetName } from "@tejerka/glitchspeak";
+import {
+  EncodePreset,
+  type EncodePresetName,
+  renderSvg,
+  type TimingPresetName,
+} from "@tejerka/glitchspeak";
 import { GlitchSpeak } from "@tejerka/glitchspeak-react";
 import { useMemo, useState } from "react";
 import { CAPTURE, CAPTURE_LABEL } from "./capture.ts";
@@ -10,11 +15,13 @@ const RESOLVES = ["last-word", "all", "none"] as const;
 
 type Language = (typeof LANGUAGES)[number];
 type ResolveMode = (typeof RESOLVES)[number];
-type SnippetKind = "react" | "vanilla" | "element" | "iframe" | "terminal";
+type SnippetKind = "react" | "vanilla" | "element" | "iframe" | "svg" | "terminal";
 
 const REPO = "https://github.com/tejerka/glitchspeak";
 const NPM = "https://www.npmjs.com/package/@tejerka/glitchspeak";
 const CDN = "https://cdn.jsdelivr.net/npm/@tejerka/glitchspeak";
+/** The SVG worker. Set VITE_SVG_HOST at build time once it is deployed. */
+const SVG_HOST: string | undefined = import.meta.env.VITE_SVG_HOST || undefined;
 
 interface Settings {
   text: string;
@@ -32,7 +39,27 @@ const encodeNames = ({ level, language }: Settings): EncodePresetName[] => [
   language,
 ];
 
-const snippet = (kind: SnippetKind, settings: Settings, embedUrl: string): string => {
+/** `/<encode>/<timing>/<text>.svg?…` — `_` stands for a space, a real one is `%5F`. */
+const svgPath = (settings: Settings): string => {
+  const text = settings.text
+    .split(" ")
+    .map((part) => encodeURIComponent(part).replaceAll("_", "%5F"))
+    .join("_");
+  const params = new URLSearchParams({
+    seed: String(settings.seed),
+    lines: String(settings.lines),
+    resolve: settings.resolve,
+  });
+  const flags = settings.lineNumbers ? "&lineNumbers" : "";
+
+  return `/${encodeNames(settings).join("+")}/${settings.timing}/${text}.svg?${params}${flags}`;
+};
+
+const snippet = (
+  kind: SnippetKind,
+  settings: Settings,
+  urls: { embed: string; svg: string },
+): string => {
   const [level, language] = encodeNames(settings);
   const text = JSON.stringify(settings.text);
   const lineNumbers = settings.lineNumbers;
@@ -78,10 +105,14 @@ mount(document.querySelector("#hero"), ${text}, {
 </glitch-speak>`;
     case "iframe":
       return `<iframe
-  src="${embedUrl}"
+  src="${urls.embed}"
   title=${JSON.stringify(settings.text)}
   width="720" height="220" style="border:0"
 ></iframe>`;
+    case "svg":
+      return `![${settings.text.replace(/[[\]]/g, "")}](${urls.svg})
+
+<img src="${urls.svg}" alt=${JSON.stringify(settings.text)} />`;
     case "terminal":
       return `import { mountTerminal } from "@tejerka/glitchspeak";
 
@@ -140,7 +171,24 @@ export const App = () => {
     return new URL(`${import.meta.env.BASE_URL}embed/?${params}`, window.location.origin).href;
   }, [settings]);
 
-  const code = snippet(kind, settings, embedUrl);
+  const svgUrl = `${SVG_HOST ?? "https://glitchspeak.<your-subdomain>.workers.dev"}${svgPath(settings)}`;
+  const code = snippet(kind, settings, { embed: embedUrl, svg: svgUrl });
+
+  const download = () => {
+    const svg = renderSvg(settings.text, {
+      encode,
+      timing: settings.timing,
+      seed: settings.seed,
+      lines: settings.lines,
+      resolve: settings.resolve,
+      lineNumbers: settings.lineNumbers,
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+    link.download = "glitchspeak.svg";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
 
   const copy = async () => {
     try {
@@ -321,7 +369,7 @@ export const App = () => {
 
         <div className="snippet">
           <div className="tabs" role="tablist">
-            {(["react", "vanilla", "element", "iframe", "terminal"] as const).map((name) => (
+            {(["react", "vanilla", "element", "iframe", "svg", "terminal"] as const).map((name) => (
               <button
                 key={name}
                 type="button"
@@ -332,7 +380,10 @@ export const App = () => {
                 {name === "element" ? "<glitch-speak>" : name}
               </button>
             ))}
-            <button type="button" className="copy" onClick={copy}>
+            <button type="button" className="copy" onClick={download}>
+              download .svg
+            </button>
+            <button type="button" onClick={copy}>
               {copied ? "copied" : "copy"}
             </button>
           </div>
@@ -343,6 +394,12 @@ export const App = () => {
             <p className="note">
               <a href={embedUrl}>Open the embed</a> — every option is a query parameter, plus{" "}
               <code>bg=transparent</code>, <code>size</code> and <code>align=center</code>.
+            </p>
+          )}
+          {kind === "svg" && (
+            <p className="note">
+              An animated SVG for READMEs and Markdown previews, served by the Cloudflare worker
+              {SVG_HOST === undefined ? " once deployed" : ""}. Or download it and commit the file.
             </p>
           )}
         </div>

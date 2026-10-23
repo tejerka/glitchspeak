@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: "24"
           cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            worker/package-lock.json
 
       - name: Install
         run: npm ci
@@ -38,3 +41,15 @@ jobs:
 
       - name: Test react
         run: npm -w react run test
+
+      - name: Install worker
+        run: npm ci
+        working-directory: worker
+
+      - name: Typecheck worker
+        run: npm run typecheck
+        working-directory: worker
+
+      - name: Test worker
+        run: npm test
+        working-directory: worker

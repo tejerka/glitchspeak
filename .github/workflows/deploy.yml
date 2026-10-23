@@ -17,6 +17,8 @@ concurrency:
 
 env:
   VITE_BASE_PATH: /glitchspeak/
+  # The deployed SVG worker, e.g. https://glitchspeak.<subdomain>.workers.dev (repository variable).
+  VITE_SVG_HOST: ${{ vars.SVG_HOST }}
 
 jobs:
   deploy:

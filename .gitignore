@@ -4,12 +4,15 @@ core/.test-out/
 react/dist/
 react/.test-out/
 demo/dist/
+worker/.test-out/
+worker/.wrangler/
 
 # Dependencies
 node_modules/
 core/node_modules/
 react/node_modules/
 demo/node_modules/
+worker/node_modules/
 
 # Local tool caches
 .cachebro/
