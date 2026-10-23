@@ -11,7 +11,7 @@
 
 ## Live Demo
 
-[https://efficimo.github.io/glitchspeak/](https://efficimo.github.io/glitchspeak/)
+[https://tejerka.github.io/glitchspeak/](https://tejerka.github.io/glitchspeak/)
 
 ```
 1  &&   n0b0dy()
@@ -256,7 +256,7 @@ The demo site serves an embeddable page — every option is a query parameter:
 
 ```html
 <iframe
-  src="https://efficimo.github.io/glitchspeak/embed/?text=nobody%20on%20earth%20knows&encode=corrupted,sql&timing=nervous&line-numbers"
+  src="https://tejerka.github.io/glitchspeak/embed/?text=nobody%20on%20earth%20knows&encode=corrupted,sql&timing=nervous&line-numbers"
   title="nobody on earth knows" width="720" height="220" style="border:0"
 ></iframe>
 ```

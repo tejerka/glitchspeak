@@ -55,4 +55,4 @@ function Status() {
 
 The animation restarts when the text or an option changes — pass presets by name, or keep their reference stable.
 
-Full documentation: [github.com/efficimo/glitchspeak](https://github.com/efficimo/glitchspeak#readme) · Demo: [efficimo.github.io/glitchspeak](https://efficimo.github.io/glitchspeak/)
+Full documentation: [github.com/tejerka/glitchspeak](https://github.com/tejerka/glitchspeak#readme) · Demo: [tejerka.github.io/glitchspeak](https://tejerka.github.io/glitchspeak/)

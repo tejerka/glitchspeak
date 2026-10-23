@@ -12,7 +12,7 @@ type Language = (typeof LANGUAGES)[number];
 type ResolveMode = (typeof RESOLVES)[number];
 type SnippetKind = "react" | "vanilla" | "element" | "iframe" | "terminal";
 
-const REPO = "https://github.com/efficimo/glitchspeak";
+const REPO = "https://github.com/tejerka/glitchspeak";
 const NPM = "https://www.npmjs.com/package/@efficimo/glitchspeak";
 const CDN = "https://cdn.jsdelivr.net/npm/@efficimo/glitchspeak";
 
@@ -351,7 +351,7 @@ export const App = () => {
       <footer className="footer">
         <code>npm install @efficimo/glitchspeak</code>
         <span>
-          MIT · <a href={REPO}>efficimo/glitchspeak</a>
+          MIT · <a href={REPO}>tejerka/glitchspeak</a>
         </span>
       </footer>
     </div>

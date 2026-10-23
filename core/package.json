@@ -17,12 +17,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/efficimo/glitchspeak.git"
+    "url": "git+https://github.com/tejerka/glitchspeak.git"
   },
   "bugs": {
-    "url": "https://github.com/efficimo/glitchspeak/issues"
+    "url": "https://github.com/tejerka/glitchspeak/issues"
   },
-  "homepage": "https://efficimo.github.io/glitchspeak/",
+  "homepage": "https://tejerka.github.io/glitchspeak/",
   "engines": {
     "node": ">=18"
   },
