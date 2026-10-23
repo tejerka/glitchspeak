@@ -1,0 +1,69 @@
+{
+  "name": "@efficimo/glitchspeak",
+  "version": "0.0.0",
+  "description": "Turn plain text into animated pseudo-code — leetspeak glyphs, syntax noise and a typewriter cursor that resolves back to human words.",
+  "author": "efficimo",
+  "license": "MIT",
+  "keywords": [
+    "text-animation",
+    "typewriter",
+    "leetspeak",
+    "glitch",
+    "terminal",
+    "cyberpunk",
+    "pseudo-code",
+    "typescript",
+    "zero-dependencies"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/efficimo/glitchspeak.git"
+  },
+  "bugs": {
+    "url": "https://github.com/efficimo/glitchspeak/issues"
+  },
+  "homepage": "https://efficimo.github.io/glitchspeak/",
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "commonjs",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./style.css": "./style.css"
+  },
+  "files": [
+    "dist",
+    "src",
+    "style.css"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node scripts/postbuild.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "tsc -p tsconfig.test.json && node --test .test-out/test/*.test.js",
+    "prepublishOnly": "npm run build && npm run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.7",
+    "typescript": "^7.0.2",
+    "happy-dom": "^21.0.4"
+  }
+}

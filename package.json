@@ -1,0 +1,19 @@
+{
+  "name": "@efficimo/glitchspeak-workspace",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "core",
+    "react"
+  ],
+  "scripts": {
+    "lint": "biome ci .",
+    "format": "biome check --write .",
+    "dev": "npm run dev --prefix demo",
+    "install:demo": "npm install --prefix demo",
+    "demo:terminal": "npm -w core run build && node demo/terminal.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.2"
+  }
+}

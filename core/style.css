@@ -1,0 +1,80 @@
+/*
+ * @efficimo/glitchspeak — optional stylesheet.
+ * Tune it with the custom properties below, or skip it and style the gs-* classes yourself.
+ */
+.gs-root {
+  --gs-fg: #d4d4d8;
+  --gs-accent: #39ff14;
+  --gs-noise: #71717a;
+  --gs-gutter: #3f3f46;
+  --gs-resolved: #f4fff0;
+  --gs-font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+  --gs-font-resolved: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", sans-serif;
+
+  position: relative;
+  color: var(--gs-fg);
+  font-family: var(--gs-font-mono);
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.gs-line {
+  display: block;
+  min-height: 1.6em;
+}
+
+.gs-gutter {
+  display: inline-block;
+  min-width: 2ch;
+  margin-right: 2.5ch;
+  color: var(--gs-gutter);
+  text-align: right;
+  user-select: none;
+}
+
+.gs-glyph {
+  color: var(--gs-accent);
+}
+
+.gs-noise {
+  color: var(--gs-noise);
+}
+
+.gs-resolved {
+  color: var(--gs-resolved);
+  font-family: var(--gs-font-resolved);
+  font-weight: 800;
+  text-shadow: 0 0 0 transparent;
+  transition: text-shadow 0.6s ease-out;
+}
+
+.gs-root[data-phase="done"] .gs-resolved {
+  text-shadow:
+    0 0 0.25em var(--gs-accent),
+    0 0 0.8em color-mix(in srgb, var(--gs-accent) 60%, transparent),
+    0 0 1.6em color-mix(in srgb, var(--gs-accent) 30%, transparent);
+}
+
+.gs-cursor {
+  color: var(--gs-accent);
+}
+
+.gs-root[data-phase="done"] .gs-cursor {
+  animation: gs-blink 1.05s steps(1) infinite;
+}
+
+@keyframes gs-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gs-resolved {
+    transition: none;
+  }
+
+  .gs-root[data-phase="done"] .gs-cursor {
+    animation: none;
+  }
+}
