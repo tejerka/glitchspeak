@@ -1,4 +1,4 @@
-import type { Token } from "@efficimo/glitchspeak";
+import type { Token } from "@tejerka/glitchspeak";
 
 /** The reference capture, token for token — proof that the engine plays any hand-written code. */
 export const CAPTURE: Token[] = [

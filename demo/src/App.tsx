@@ -1,5 +1,5 @@
-import { EncodePreset, type EncodePresetName, type TimingPresetName } from "@efficimo/glitchspeak";
-import { GlitchSpeak } from "@efficimo/glitchspeak-react";
+import { EncodePreset, type EncodePresetName, type TimingPresetName } from "@tejerka/glitchspeak";
+import { GlitchSpeak } from "@tejerka/glitchspeak-react";
 import { useMemo, useState } from "react";
 import { CAPTURE, CAPTURE_LABEL } from "./capture.ts";
 
@@ -13,8 +13,8 @@ type ResolveMode = (typeof RESOLVES)[number];
 type SnippetKind = "react" | "vanilla" | "element" | "iframe" | "terminal";
 
 const REPO = "https://github.com/tejerka/glitchspeak";
-const NPM = "https://www.npmjs.com/package/@efficimo/glitchspeak";
-const CDN = "https://cdn.jsdelivr.net/npm/@efficimo/glitchspeak";
+const NPM = "https://www.npmjs.com/package/@tejerka/glitchspeak";
+const CDN = "https://cdn.jsdelivr.net/npm/@tejerka/glitchspeak";
 
 interface Settings {
   text: string;
@@ -39,9 +39,9 @@ const snippet = (kind: SnippetKind, settings: Settings, embedUrl: string): strin
 
   switch (kind) {
     case "react":
-      return `import { EncodePreset } from "@efficimo/glitchspeak";
-import { GlitchSpeak } from "@efficimo/glitchspeak-react";
-import "@efficimo/glitchspeak/style.css";
+      return `import { EncodePreset } from "@tejerka/glitchspeak";
+import { GlitchSpeak } from "@tejerka/glitchspeak-react";
+import "@tejerka/glitchspeak/style.css";
 
 // Outside the component: a stable reference, so the animation does not restart.
 const voice = EncodePreset.${level}.extends("${language}");
@@ -55,8 +55,8 @@ const voice = EncodePreset.${level}.extends("${language}");
   resolve="${settings.resolve}"${lineNumbers ? "\n  lineNumbers" : ""}
 />`;
     case "vanilla":
-      return `import { EncodePreset, mount } from "@efficimo/glitchspeak";
-import "@efficimo/glitchspeak/style.css";
+      return `import { EncodePreset, mount } from "@tejerka/glitchspeak";
+import "@tejerka/glitchspeak/style.css";
 
 mount(document.querySelector("#hero"), ${text}, {
   encode: EncodePreset.${level}.extends("${language}"),
@@ -83,7 +83,7 @@ mount(document.querySelector("#hero"), ${text}, {
   width="720" height="220" style="border:0"
 ></iframe>`;
     case "terminal":
-      return `import { mountTerminal } from "@efficimo/glitchspeak";
+      return `import { mountTerminal } from "@tejerka/glitchspeak";
 
 mountTerminal(process.stdout, ${text}, {
   encode: "${level}",
@@ -349,7 +349,7 @@ export const App = () => {
       </section>
 
       <footer className="footer">
-        <code>npm install @efficimo/glitchspeak</code>
+        <code>npm install @tejerka/glitchspeak</code>
         <span>
           MIT · <a href={REPO}>tejerka/glitchspeak</a>
         </span>

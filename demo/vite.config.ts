@@ -9,9 +9,9 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: [
-      { find: /^@efficimo\/glitchspeak\/style\.css$/, replacement: root("../core/style.css") },
-      { find: /^@efficimo\/glitchspeak-react$/, replacement: root("../react/src/index.ts") },
-      { find: /^@efficimo\/glitchspeak$/, replacement: root("../core/src/index.ts") },
+      { find: /^@tejerka\/glitchspeak\/style\.css$/, replacement: root("../core/style.css") },
+      { find: /^@tejerka\/glitchspeak-react$/, replacement: root("../react/src/index.ts") },
+      { find: /^@tejerka\/glitchspeak$/, replacement: root("../core/src/index.ts") },
     ],
     // The lib is read straight from ../core/src and ../react/src, so its imports resolve against
     // the root node_modules — without this the demo would load a second copy of React.

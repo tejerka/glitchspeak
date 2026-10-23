@@ -1,5 +1,5 @@
-import { defineGlitchSpeakElement } from "@efficimo/glitchspeak";
-import "@efficimo/glitchspeak/style.css";
+import { defineGlitchSpeakElement } from "@tejerka/glitchspeak";
+import "@tejerka/glitchspeak/style.css";
 import "./embed.css";
 
 /**

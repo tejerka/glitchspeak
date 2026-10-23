@@ -1,11 +1,11 @@
-# @efficimo/glitchspeak
+# @tejerka/glitchspeak
 
 `gl1tch.sp34k()` — `&& m4ke(w0rds) .c0mpile();` → **Words that compile themselves.**
 
-[![npm version](https://img.shields.io/npm/v/@efficimo/glitchspeak)](https://www.npmjs.com/package/@efficimo/glitchspeak)
-[![npm version](https://img.shields.io/npm/v/@efficimo/glitchspeak-react?label=%40efficimo%2Fglitchspeak-react)](https://www.npmjs.com/package/@efficimo/glitchspeak-react)
-[![license](https://img.shields.io/npm/l/@efficimo/glitchspeak)](./LICENSE)
-[![types](https://img.shields.io/npm/types/@efficimo/glitchspeak)](https://www.npmjs.com/package/@efficimo/glitchspeak)
+[![npm version](https://img.shields.io/npm/v/@tejerka/glitchspeak)](https://www.npmjs.com/package/@tejerka/glitchspeak)
+[![npm version](https://img.shields.io/npm/v/@tejerka/glitchspeak-react?label=%40tejerka%2Fglitchspeak-react)](https://www.npmjs.com/package/@tejerka/glitchspeak-react)
+[![license](https://img.shields.io/npm/l/@tejerka/glitchspeak)](./LICENSE)
+[![types](https://img.shields.io/npm/types/@tejerka/glitchspeak)](https://www.npmjs.com/package/@tejerka/glitchspeak)
 
 > Make words compile. Turn any sentence into living pseudo-code: leetspeak, syntax noise, and a cursor that resolves it back to plain text. Zero dependencies.
 
@@ -29,10 +29,10 @@ Framework-agnostic core. React bindings. Zero runtime dependencies.
 
 ## Packages
 
-| Package                                  | Description                                                                      |
-| ---------------------------------------- | -------------------------------------------------------------------------------- |
-| [`@efficimo/glitchspeak`](./core)        | Core — encode, timeline, player, DOM, `<glitch-speak>`, HTML/ANSI/text renderers |
-| [`@efficimo/glitchspeak-react`](./react) | React bindings — `<GlitchSpeak />` and `useGlitchSpeak`                          |
+| Package                                 | Description                                                                      |
+| --------------------------------------- | -------------------------------------------------------------------------------- |
+| [`@tejerka/glitchspeak`](./core)        | Core — encode, timeline, player, DOM, `<glitch-speak>`, HTML/ANSI/text renderers |
+| [`@tejerka/glitchspeak-react`](./react) | React bindings — `<GlitchSpeak />` and `useGlitchSpeak`                          |
 
 ## Why
 
@@ -53,17 +53,17 @@ text ──encode──▶ Token[] ──timeline──▶ frameAt(ms) ──pla
 
 ```bash
 # core only
-npm install @efficimo/glitchspeak
+npm install @tejerka/glitchspeak
 
 # with React bindings
-npm install @efficimo/glitchspeak @efficimo/glitchspeak-react
+npm install @tejerka/glitchspeak @tejerka/glitchspeak-react
 ```
 
 ## Quick start
 
 ```typescript
-import { mount } from "@efficimo/glitchspeak";
-import "@efficimo/glitchspeak/style.css";
+import { mount } from "@tejerka/glitchspeak";
+import "@tejerka/glitchspeak/style.css";
 
 mount(document.querySelector("#hero"), "nobody on earth knows what any of it means.", {
   encode: "glitch", // how the text turns into code
@@ -74,8 +74,8 @@ mount(document.querySelector("#hero"), "nobody on earth knows what any of it mea
 ```
 
 ```tsx
-import { GlitchSpeak } from "@efficimo/glitchspeak-react";
-import "@efficimo/glitchspeak/style.css";
+import { GlitchSpeak } from "@tejerka/glitchspeak-react";
+import "@tejerka/glitchspeak/style.css";
 
 <GlitchSpeak text="nobody on earth knows what any of it means." lines={3} lineNumbers />;
 ```
@@ -89,7 +89,7 @@ import "@efficimo/glitchspeak/style.css";
 Each module has its own preset class: `EncodePreset` for the mapping, `TimingPreset` for the rhythm. Wherever a preset is expected, pass a **name**, a **preset**, or **plain options** — nothing means `default`.
 
 ```typescript
-import { EncodePreset, TimingPreset } from "@efficimo/glitchspeak";
+import { EncodePreset, TimingPreset } from "@tejerka/glitchspeak";
 
 EncodePreset.corrupted.extends(EncodePreset.sql); // corrupted SQL
 EncodePreset.corrupted.extends("sql", { caseFlip: 0 }); // names and options work too
@@ -155,20 +155,20 @@ Two families that compose without stepping on each other:
 
 From calm to frantic — `TimingPreset.levels` keeps them in order:
 
-| Preset      | `cps` | `jitter` | `wordPause` / `linePause` | `flicker` | `resolveDuration` |
-| ----------- | ----- | -------- | ------------------------- | --------- | ----------------- |
-| `instant`   | ∞     | 0        | 0 / 0                     | 0         | 0                 |
-| `steady`    | 30    | 0        | 0 / 250                   | 0         | 300               |
-| `human`     | 28    | 0.35     | 40 / 300                  | 0         | 300               |
-| `nervous`   | 40    | 0.6      | 20 / 150                  | 0.03      | 450               |
-| `corrupted` | 45    | 0.8      | 0 / 120                   | 0.08      | 700               |
+| Preset      | `cps`      | `jitter` | `wordPause` / `linePause` | `flicker` | `resolveDuration` |
+| ----------- | ---------- | -------- | ------------------------- | --------- | ----------------- |
+| `instant`   | `Infinity` | 0        | 0 / 0                     | 0         | 0                 |
+| `steady`    | 30         | 0        | 0 / 250                   | 0         | 300               |
+| `human`     | 28         | 0.35     | 40 / 300                  | 0         | 300               |
+| `nervous`   | 40         | 0.6      | 20 / 150                  | 0.03      | 450               |
+| `corrupted` | 45         | 0.8      | 0 / 120                   | 0.08      | 700               |
 
 `default` is `human`. `instant` has no animation at all: the final frame right away.
 
 | Option                    | Description                                                                 |
 | ------------------------- | --------------------------------------------------------------------------- |
 | `cps`                     | Characters per second. `Infinity` types everything at once. Default `28`.   |
-| `jitter`                  | Random variation of each keystroke, in [0, 1].                              |
+| `jitter`                  | Random variation of each keystroke, from 0 to 1.                            |
 | `wordPause` / `linePause` | Extra milliseconds after a space / a line break.                            |
 | `flicker`                 | Probability that a character is mistyped, erased, then corrected.           |
 | `flickerGlyphs`           | Characters drawn for mistypes and for the scramble of resolving words.      |
@@ -235,7 +235,7 @@ Options: `autoplay` (default `true`) and `scheduler` — `requestAnimationFrame`
 The whole pipeline in one call. `input` is a sentence or ready-made tokens; `options` takes `encode`, `timing`, `seed`, `lines` and `resolve` — one seed feeds both stages.
 
 ```typescript
-import { compile, glitchspeak } from "@efficimo/glitchspeak";
+import { compile, glitchspeak } from "@tejerka/glitchspeak";
 
 const run = compile("nobody on earth knows", { encode: "sql", timing: "nervous", seed: 42 }); // encode + timeline
 const player = glitchspeak("nobody on earth knows", { encode: "sql", autoplay: false }); // + play
@@ -261,7 +261,7 @@ Renders into `element`, replacing its content. Returns `{ player, unmount() }`.
 
 ```html
 <script type="module">
-  import { defineGlitchSpeakElement } from '@efficimo/glitchspeak';
+  import { defineGlitchSpeakElement } from '@tejerka/glitchspeak';
   defineGlitchSpeakElement();
 </script>
 
@@ -310,7 +310,7 @@ Plus `bg=transparent`, `size` (px) and `align=center`. A click replays it. The p
 Every renderer takes `lineNumbers` and `cursor`; HTML ones also take `label` and `classNames`.
 
 ```typescript
-import { mountTerminal } from "@efficimo/glitchspeak";
+import { mountTerminal } from "@tejerka/glitchspeak";
 
 await mountTerminal(process.stdout, "the core is awake", { encode: "scrambled" }).player.finished;
 ```
@@ -327,7 +327,7 @@ Try it from a clone: `npm run demo:terminal -- "the core is awake" "corrupted sq
 
 ### Styling
 
-`@efficimo/glitchspeak/style.css` is optional. It styles the `gs-*` classes and reads custom properties:
+`@tejerka/glitchspeak/style.css` is optional. It styles the `gs-*` classes and reads custom properties:
 
 | Class                                                | Part                                                                            |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -361,17 +361,17 @@ Or skip the stylesheet and pass `classNames`: `defaultClassNames` lists the defa
 
 ---
 
-## React bindings — `@efficimo/glitchspeak-react`
+## React bindings — `@tejerka/glitchspeak-react`
 
 ```bash
-npm install @efficimo/glitchspeak @efficimo/glitchspeak-react
+npm install @tejerka/glitchspeak @tejerka/glitchspeak-react
 ```
 
 ### `<GlitchSpeak />`
 
 ```tsx
-import { EncodePreset } from "@efficimo/glitchspeak";
-import { GlitchSpeak } from "@efficimo/glitchspeak-react";
+import { EncodePreset } from "@tejerka/glitchspeak";
+import { GlitchSpeak } from "@tejerka/glitchspeak-react";
 
 // Outside the component: a stable reference, so the animation does not restart.
 const voice = EncodePreset.scrambled.extends("shell");
@@ -398,8 +398,8 @@ Every `mount` option is a prop — `text` takes a sentence or ready-made tokens 
 Returns `{ frame, player }` for a renderer of your own. Built on `useSyncExternalStore`. Takes the same options as the component, rendering ones aside.
 
 ```tsx
-import { frameToText } from "@efficimo/glitchspeak";
-import { useGlitchSpeak } from "@efficimo/glitchspeak-react";
+import { frameToText } from "@tejerka/glitchspeak";
+import { useGlitchSpeak } from "@tejerka/glitchspeak-react";
 
 function Status() {
   const { frame, player } = useGlitchSpeak("loading the lore");
@@ -444,9 +444,9 @@ npm run demo:terminal -- "the core is awake" "corrupted sql"
 
 Pushing a `v*` tag triggers both publish workflows; each syncs its version from the tag name.
 
-| Tag      | Publishes                                                             |
-| -------- | --------------------------------------------------------------------- |
-| `v1.2.3` | `@efficimo/glitchspeak@1.2.3` and `@efficimo/glitchspeak-react@1.2.3` |
+| Tag      | Publishes                                                           |
+| -------- | ------------------------------------------------------------------- |
+| `v1.2.3` | `@tejerka/glitchspeak@1.2.3` and `@tejerka/glitchspeak-react@1.2.3` |
 
 Every successful CI run on `main` deploys the demo to GitHub Pages.
 

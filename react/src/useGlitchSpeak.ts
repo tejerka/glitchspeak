@@ -8,7 +8,7 @@ import {
   prefersReducedMotion,
   type ReducedMotion,
   type Scheduler,
-} from "@efficimo/glitchspeak";
+} from "@tejerka/glitchspeak";
 import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 
 export interface UseGlitchSpeakOptions extends GlitchSpeakOptions {

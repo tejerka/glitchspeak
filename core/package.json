@@ -1,8 +1,8 @@
 {
-  "name": "@efficimo/glitchspeak",
+  "name": "@tejerka/glitchspeak",
   "version": "0.0.0",
   "description": "Turn plain text into animated pseudo-code — leetspeak glyphs, syntax noise and a typewriter cursor that resolves back to human words.",
-  "author": "efficimo",
+  "author": "tejerka",
   "license": "MIT",
   "keywords": [
     "text-animation",

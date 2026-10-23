@@ -9,8 +9,8 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "paths": {
-      "@efficimo/glitchspeak": ["../core/src/index.ts"],
-      "@efficimo/glitchspeak-react": ["../react/src/index.ts"]
+      "@tejerka/glitchspeak": ["../core/src/index.ts"],
+      "@tejerka/glitchspeak-react": ["../react/src/index.ts"]
     },
     "types": ["vite/client"]
   },

@@ -4,7 +4,7 @@ import {
   type RenderOptions,
   resolveClassNames,
   srOnlyStyle,
-} from "@efficimo/glitchspeak";
+} from "@tejerka/glitchspeak";
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import { type UseGlitchSpeakOptions, useGlitchSpeak } from "./useGlitchSpeak.ts";
 

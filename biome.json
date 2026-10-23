@@ -13,7 +13,8 @@
       "!demo/node_modules",
       "!node_modules",
       "!.claude",
-      "!.cachebro"
+      "!.cachebro",
+      "!**/*.md"
     ]
   },
   "linter": {
